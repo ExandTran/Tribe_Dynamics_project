@@ -65,4 +65,6 @@ X_test = np.array(X_test)
 X_id_test = np.array(X_id_test)
 Y_train = np.array(Y_train)
 Y_test = np.array(Y_test)
+data = np.array(data)
+labels = np.array(labels)
 

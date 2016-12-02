@@ -1,14 +1,14 @@
 import json
 import numpy as np
 from collections import defaultdict
-from load import X_train,Y_train,X_test,Y_test,test
+from load import data,labels,test
 from sklearn.externals import joblib
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn import svm
 from sklearn.model_selection import cross_val_score
 from sklearn.pipeline import Pipeline
 
-with open("glove.6B.50d.txt", "rb") as lines:
+with open("glove.6B.300d.txt", "rb") as lines:
     w2v = {line.split()[0]: np.array(map(float, line.split()[1:]))
            for line in lines}
 print("finished reading word2vec...")
@@ -43,9 +43,7 @@ class TfidfEmbeddingVectorizer(object):
 pipeline = Pipeline([
 ("word2vec vectorizer", TfidfEmbeddingVectorizer(w2v)),
 ("radial svm", svm.SVC(kernel = "rbf", C=100))])
-score = cross_val_score(pipeline, np.concatenate([X_train, X_test]), np.concatenate([Y_train, Y_test]), cv = 5).mean()
-print(score)
-data = {"response" :pipeline.fit(np.concatenate([X_train, X_test]), np.concatenate([Y_train, Y_test])).predict(test)}
+data = {"response" :pipeline.fit(data, labels).predict(test).tolist()}
 with open('predict.json', 'w') as json_file:
     json.dump(data, json_file)
 
