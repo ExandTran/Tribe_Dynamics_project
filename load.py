@@ -34,7 +34,6 @@ for i in range(len(data)):
 	else:
 		X_train.append(data[i])
 		Y_train.append(labels[i])
-print(len(X_train), len(X_test), len(Y_train), len(Y_test))
 
 X_train = np.array(X_train)
 X_test = np.array(X_test)
