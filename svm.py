@@ -46,5 +46,3 @@ pipeline = Pipeline([
 data = {"response" :pipeline.fit(data, labels).predict(test).tolist()}
 with open('predict.json', 'w') as json_file:
     json.dump(data, json_file)
-
-# joblib.dump(overall_best_model, 'svm_model.pkl') 
