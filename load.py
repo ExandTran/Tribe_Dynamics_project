@@ -7,7 +7,10 @@ import re
 with open("data/train_data.json", "r") as json_file:
     loaded_data = json.load(json_file)
 
-longest_text = 1480
+with open("data/test_data_no_response.json", "r") as json_file:
+    test_data = json.load(json_file)
+
+longest_text = 1946
 word_to_ids = {}
 num_words = 0
 
@@ -28,6 +31,14 @@ for row in loaded_data:
     data.append([row['brand_id']] + text + [row['emv']])
     labels.append(row['feedback_bool'])
     id_data.append(ids)
+
+test = []
+for row in test_data:
+    text = [""] * longest_text
+    text_data = re.sub(r'[^\w\s]', "", row['text']).split()
+    for i in range(len(text_data)):
+        text[i] = text_data[i]
+    test.append([row['brand_id']] + text + [row['emv']])
 
 test_indices = random.sample(range(len(data)), len(data) / 10)
 

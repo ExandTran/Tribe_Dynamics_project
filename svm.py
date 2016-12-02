@@ -1,12 +1,12 @@
+import json
 import numpy as np
 from collections import defaultdict
-from load import X_train,Y_train,X_test,Y_test
+from load import X_train,Y_train,X_test,Y_test,test
 from sklearn.externals import joblib
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.linear_model import LogisticRegression
+from sklearn import svm
 from sklearn.model_selection import cross_val_score
 from sklearn.pipeline import Pipeline
-
 
 with open("glove.6B.50d.txt", "rb") as lines:
     w2v = {line.split()[0]: np.array(map(float, line.split()[1:]))
@@ -39,23 +39,14 @@ class TfidfEmbeddingVectorizer(object):
                         [np.zeros(self.dim)], axis=0)
                 for words in X
             ])
-overall_best_score = 0
-overall_best_model = None
-scores = []
-for i in range(-6,7):
-    C = 10**i
-    print("fitting C = ", C)
-    pipeline = Pipeline([
-    ("word2vec vectorizer", TfidfEmbeddingVectorizer(w2v)),
-    ("logistic regression", LogisticRegression(C = C))])
-    model = pipeline.fit(X_train, Y_train)
-    score = model.score(X_test, Y_test)
-    scores.append(score)
-    if score > overall_best_score:
-        overall_best_score = score
-        overall_best_model = model
 
-print(scores)
-print("")
-print(overall_best_score)
-joblib.dump(overall_best_model, 'log_reg_model.pkl') 
+pipeline = Pipeline([
+("word2vec vectorizer", TfidfEmbeddingVectorizer(w2v)),
+("radial svm", svm.SVC(kernel = "rbf", C=100))])
+score = cross_val_score(pipeline, np.concatenate([X_train, X_test]), np.concatenate([Y_train, Y_test]), cv = 5).mean()
+print(score)
+data = {"response" :pipeline.fit(np.concatenate([X_train, X_test]), np.concatenate([Y_train, Y_test])).predict(test)}
+with open('predict.json', 'w') as json_file:
+    json.dump(data, json_file)
+
+# joblib.dump(overall_best_model, 'svm_model.pkl') 
