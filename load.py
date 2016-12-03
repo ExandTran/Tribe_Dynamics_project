@@ -41,6 +41,14 @@ for row in test_data:
     test.append([row['brand_id']] + text + [row['emv']])
 
 test_indices = random.sample(range(len(data)), len(data) / 10)
+class0 = []
+class1 = []
+for i in range(len(labels)):
+    if labels[i] == False:
+        class0.append(i)
+    else:
+        class1.append(i)
+class1 = np.array([data[i] for i in class1])
 
 X_train = []
 X_id_train = []

@@ -3,7 +3,7 @@ import numpy as np
 import random
 from collections import defaultdict
 from load import data,labels,test,class0,class1
-from sklearn import svm
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.externals import joblib
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics import precision_score
@@ -47,7 +47,7 @@ class TfidfEmbeddingVectorizer(object):
 #Pipeline
 pipeline = Pipeline([
 ("word2vec vectorizer", TfidfEmbeddingVectorizer(w2v)),
-("radial svm", svm.SVC(kernel = "rbf", C=100))])
+("Random Forest", RandomForestClassifier(n_jobs = 1000))])
 
 #Creates a random subset of the data and trains it
 
@@ -55,9 +55,9 @@ base_length = len(class1)
 best_overall_score = 0
 best_overall_model = None
 best_iteration = 0
-for multiplier in [2,3]:
+for multiplier in [2]:
     for iteration in range(5):
-        print("doing iteration", iteration, "of 5")
+        print("doing iteration", iteration - 1, "of 5")
         class0_subset_indices = random.sample(range(len(class0)), multiplier*len(class1))
         class0_subset = np.array([data[i] for i in class0 if i in class0_subset_indices])
         training_data = np.concatenate([class0_subset, class1])
@@ -86,7 +86,7 @@ for multiplier in [2,3]:
 
         predictions = model.predict(test_data)
 
-        score = precision_score(test_labels, predictions)
+        score = precision_score(test_labels, predictions, average = 'weighted')
         spc = precision_score(test_labels, predictions, average = None)
         print("score:", score)
         print("score per class", spc)
@@ -97,5 +97,5 @@ for multiplier in [2,3]:
 
 #writes json file
 data = {"response" :best_overall_model.predict(test).tolist()}
-with open('predict.json', 'w') as json_file:
+with open('predict_rf.json', 'w') as json_file:
     json.dump(data, json_file)
