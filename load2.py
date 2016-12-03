@@ -1,6 +1,5 @@
 import json
 import numpy as np
-import random
 import textmining
 
 
@@ -22,7 +21,8 @@ for row in test_data:
     test.append([row['brand_id'],row['text']])
 
 print("Converted data to usable objects")
-
+print(data[0])
+print(test[0])
 tdm = textmining.TermDocumentMatrix()
 data_obs = len(data)
 test_obs = len(test)
@@ -35,11 +35,11 @@ test = []
 count = 0
 for row in tdm.rows():
     if count == 0:
-        continue
+        pass
     if count >= data_obs:
-        test.append([total[count][0]] + row)
+        test.append([total[count - 1][0]] + row)
     else:
-        data.append([total[count][0]] + row)
+        data.append([total[count - 1][0]] + row)
     count += 1
 
 print("created train and test TDM")
