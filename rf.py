@@ -47,7 +47,7 @@ class TfidfEmbeddingVectorizer(object):
 #Pipeline
 pipeline = Pipeline([
 ("word2vec vectorizer", TfidfEmbeddingVectorizer(w2v)),
-("Random Forest", RandomForestClassifier(n_jobs = 1000))])
+("Random Forest", RandomForestClassifier(n_estimators = 1000))])
 
 #Creates a random subset of the data and trains it
 
@@ -56,8 +56,8 @@ best_overall_score = 0
 best_overall_model = None
 best_iteration = 0
 for multiplier in [2]:
-    for iteration in range(5):
-        print("doing iteration", iteration - 1, "of 5")
+    for iteration in range(3):
+        print("doing iteration", iteration, "of 2")
         class0_subset_indices = random.sample(range(len(class0)), multiplier*len(class1))
         class0_subset = np.array([data[i] for i in class0 if i in class0_subset_indices])
         training_data = np.concatenate([class0_subset, class1])
@@ -65,7 +65,7 @@ for multiplier in [2]:
 
         print("Created random training set for multiplier:", multiplier)
 
-        test_indices = random.sample(range(len(training_data)), len(training_data) / 10)
+        test_indices = random.sample(range(len(training_data)), len(training_data) / 20)
         train_data = []
         train_labels = []
         test_data = []

@@ -3,24 +3,21 @@ import numpy as np
 import random
 from collections import defaultdict
 from load2 import data,labels,test,class0,class1
-from sklearn.ensemble import RandomForestClassifier
+from sklearn import svm
 from sklearn.externals import joblib
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics import precision_score
 from sklearn.model_selection import cross_val_score
 from sklearn.pipeline import Pipeline
 
-clf = RandomForestClassifier(n_jobs = 1000)
-
-#Creates a random subset of the data and trains it
-
 base_length = len(class1)
 best_overall_score = 0
 best_overall_model = None
 best_iteration = 0
-for multiplier in [2]:
+clf = svm.SVC(kernel = 'radial', C = 100)
+for multiplier in [1,2,3]:
     for iteration in range(5):
-        print("doing iteration", iteration, "of 4")
+        print("doing iteration", iteration, "of 5")
         class0_subset_indices = random.sample(range(len(class0)), multiplier*len(class1))
         class0_subset = np.array([data[i] for i in class0 if i in class0_subset_indices])
         training_data = np.concatenate([class0_subset, class1])
@@ -60,5 +57,5 @@ for multiplier in [2]:
 
 #writes json file
 data = {"response" :best_overall_model.predict(test).tolist()}
-with open('predict_rf.json', 'w') as json_file:
+with open('predict_reg_svm.json', 'w') as json_file:
     json.dump(data, json_file)
